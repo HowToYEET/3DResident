@@ -1,14 +1,22 @@
-import './index.css'
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { Canvas } from '@react-three/fiber'
-import ModelNext from "./ModelShow3D.jsx"
-import Landingpage from "./Landingpage.jsx"
-const root = ReactDOM.createRoot(document.querySelector('#root'))
+import "./index.css";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import Landingpage from "./Landingpage.jsx";
+import ErrorPage from './Error-page.jsx'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+const root = ReactDOM.createRoot(document.querySelector("#root"));
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Landingpage />,
+    errorElement: <ErrorPage />
+  },
+]);
 
 root.render(
-    <>
-        <Landingpage />
-    </>
-
-)
+  <React.StrictMode>
+    <RouterProvider router={router}/>
+  </React.StrictMode>
+);
