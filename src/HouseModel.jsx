@@ -24,7 +24,7 @@ export default function HouseModel() {
   let placement = new THREE.Vector3(-4,1,0)
   return (
     <>
-    <Text3D font="./Varsity Regular_Varsity Regular.json" position={placement} scale={0.5}>
+    <Text3D font="./Yellow Style_Regular.json" position={placement} scale={0.5}>
         HOUSES
         <meshBasicMaterial></meshBasicMaterial>
     </Text3D>

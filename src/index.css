@@ -1,5 +1,6 @@
 html,
 body,
+main,
 #root
 {
     position: fixed;
@@ -16,4 +17,10 @@ body,
 #House{
     width: 25%;
     height: 25%;
+}
+.navbar ul a.active {
+    color: rgb(34 197 94);
+   }
+#navbar{
+    z-index: 100;
 }

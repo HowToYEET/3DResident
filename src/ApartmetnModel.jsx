@@ -3,7 +3,7 @@ import { useFrame, useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as THREE from "three";
 import React from "react";
-
+import { Text3D } from "@react-three/drei";
 export default function HouseModel() {
   const model = useLoader(GLTFLoader, "./ApartmentModel.glb");
   console.log(model);
@@ -20,8 +20,13 @@ export default function HouseModel() {
       houseRef.current.scale.set(0.2, 0.2, 0.2);
     }
   });
+  let placement = new THREE.Vector3(1,1,0)
   return (
     <>
+        <Text3D font="./Yellow Style_Regular.json" position={placement} scale={0.5}>
+        Apartments
+        <meshBasicMaterial></meshBasicMaterial>
+    </Text3D>
       <primitive
         onClick={(e) => {
           console.log("click");
