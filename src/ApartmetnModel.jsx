@@ -1,9 +1,12 @@
 import { useRef, useState } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
+import { useFrame, useLoader, extend } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as THREE from "three";
 import React from "react";
-import { Text3D } from "@react-three/drei";
+import { Text3D, Html, useGLTF } from "@react-three/drei";
+import { NavLink } from "react-router-dom";
+extend(NavLink)
+
 export default function HouseModel() {
   const model = useLoader(GLTFLoader, "./ApartmentModel.glb");
   console.log(model);
@@ -13,10 +16,12 @@ export default function HouseModel() {
   useFrame(() => {
     houseRef.current.rotation.y += 0.005;
     if (hovered) {
+      document.body.style.cursor = "pointer"
       const time = clock.getElapsedTime();
       const math = (1 / 5) * Math.sin(time) + 1;
       houseRef.current.scale.set(math*0.2, math*0.2, math*0.2);
     } else {
+      document.body.style.cursor = "auto"
       houseRef.current.scale.set(0.2, 0.2, 0.2);
     }
   });
@@ -29,7 +34,7 @@ export default function HouseModel() {
     </Text3D>
       <primitive
         onClick={(e) => {
-          console.log("click");
+          location.href = "/SelectApartments"
         }}
         onPointerEnter={(e) => {
           set(true);
@@ -43,3 +48,4 @@ export default function HouseModel() {
     </>
   );
 }
+useGLTF.preload("./9thproject.glb")

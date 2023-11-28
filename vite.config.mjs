@@ -8,7 +8,6 @@ export default defineConfig({
   plugins: [
     // React support
     react(),
-
     // .js file support as if it was JSX
     {
       name: "load+transform-js-files-as-jsx",

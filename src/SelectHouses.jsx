@@ -9,7 +9,7 @@ export default function SelectHouses() {
 
   let itemList = someHouses.map((item, index) => {
     return (
-      <>
+      <div>
         <div className=" bg-sky-500 hover:bg-sky-700 flex justify-center rounded-lg">
           <div className="">
             <h2 className="text-lg">{item.RoadName}</h2>
@@ -18,13 +18,13 @@ export default function SelectHouses() {
             <img className="object-cover h-auto w-80 rounded-lg place-content-center" src={item.image} alt="placeholder"/>
           </div>
         </div>
-      </>
+      </div>
     );
   });
   return (
-    <>
+    <div>
       <main className=" mx-5 bg-sky-100 relative top-40 grid grid-cols-3 gap-5">{itemList}</main>
-    </>
+    </div>
   );
 }
 const formatter = new Intl.NumberFormat('dk-DK', {
