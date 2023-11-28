@@ -6,15 +6,17 @@ import ErrorPage from './Error-page.jsx'
 import { createBrowserRouter, RouterProvider, Route, NavLink, createRoutesFromElements } from "react-router-dom";
 import Houses from "./Houses";
 import SelectHouses from './SelectHouses'
+import SelectApartments from "./SelectApartments.jsx"
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<Landingpage></Landingpage>}>
-      <Route index element={<Houses></Houses>}></Route>
-      <Route path="/Home" element={<Houses></Houses>}/>
-      <Route path="/SelectHouses" element={<SelectHouses></SelectHouses>}/>
+    <Route element={<Landingpage/>}>
+      <Route index element={<Houses />}/>
+      <Route path="/Home" element={<Houses />}/>
+      <Route path="/SelectHouses" element={<SelectHouses />}/>
+      <Route path="/SelectApartments" element={<SelectApartments />} />
     </Route>
   )
 )
