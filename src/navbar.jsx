@@ -1,10 +1,10 @@
 import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 export default function Nav(){
   return (
     <>
       <header>
-        <nav class="fixed z-10 bg-white border-gray-600 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
+        <nav class="fixed w-full z-10 bg-white border-gray-600 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
           <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
               <img
                 src="./resident.JPG"
