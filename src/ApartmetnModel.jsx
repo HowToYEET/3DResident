@@ -19,10 +19,10 @@ export default function HouseModel() {
       document.body.style.cursor = "pointer"
       const time = clock.getElapsedTime();
       const math = (1 / 5) * Math.sin(time) + 1;
-      houseRef.current.scale.set(math*0.2, math*0.2, math*0.2);
+      houseRef.current.scale.set(math*1, math*1, math*1);
     } else {
       document.body.style.cursor = "auto"
-      houseRef.current.scale.set(0.2, 0.2, 0.2);
+      houseRef.current.scale.set(1, 1, 1);
     }
   });
   let placement = new THREE.Vector3(1,1,0)
