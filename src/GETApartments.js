@@ -84,7 +84,7 @@ const ListOfApartments = [
       "https://images.boligsiden.dk/images/case/eb6de37e-ce90-403e-adba-f54bd0cde0b7/1440x960/4541bbcf-5376-40c4-952d-32295da77ea9.webp",
       "https://images.boligsiden.dk/images/case/eb6de37e-ce90-403e-adba-f54bd0cde0b7/1440x960/4927582f-f24e-46e9-873c-855769399d14.webp"
     ],
-    1395000, 1969, 3, 0, 15852, Energy.C, [-4, 1, 8],[],"/Apartment_1.glb"
+    1395000, 1969, 3, 0, 15852, Energy.C, [-4, 1, 8],[],"/Apartment_5.glb"
   ),
   new Apartment(9000, "Aalborg", "Reberbansgade 18, 1.", 99,
     [
