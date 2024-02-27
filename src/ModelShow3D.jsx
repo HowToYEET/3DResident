@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useRef, useState } from "react";
 import {
   Environment,
   FirstPersonControls,
+  Lightformer,
   OrbitControls,
   OrthographicCamera,
   PerspectiveCamera,
@@ -13,7 +14,7 @@ import { Canvas, events, useFrame, useThree } from "@react-three/fiber";
 import { useLocation } from "react-router-dom";
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-import { Physics, RigidBody} from "@react-three/rapier";
+import { Physics, RigidBody } from "@react-three/rapier";
 
 const _euler = new THREE.Euler(0, 0, 0, "YXZ");
 
@@ -25,7 +26,7 @@ const Control = (ARef) => {
   let moveUp = false;
   let moveDown = false;
   const { camera } = useThree();
-  console.log(ARef.apartment.current)
+  console.log(ARef.apartment.current);
   console.log(camera);
   console.log(ARef);
   const handleMouseMove = (e) => {
@@ -120,7 +121,7 @@ const Control = (ARef) => {
     camera.position.y = 1.6;
     //frameLimits(camera.position)
     if (moveForward == true) {
-      console.log(camera.position)
+      console.log(camera.position);
       camera.translateZ(-actualMoveSpeed);
       camera.position.y = 1.6;
     }
@@ -144,18 +145,18 @@ const Control = (ARef) => {
       camera.position.y = 2;
     }
   }
-  function frameLimits(position){
-    if(position.z >= 4.99){
-      position.z = 4.99
+  function frameLimits(position) {
+    if (position.z >= 4.99) {
+      position.z = 4.99;
     }
-    if(position.z <= -6.5){
-      position.z = -6.5
+    if (position.z <= -6.5) {
+      position.z = -6.5;
     }
-    if(position.x <= -7){
-      position.x = -7
+    if (position.x <= -7) {
+      position.x = -7;
     }
-    if(position.x >= 1.1){
-      position.x = 1.1
+    if (position.x >= 1.1) {
+      position.x = 1.1;
     }
   }
   useFrame((_, delta) => {
@@ -175,7 +176,19 @@ export default function Model3D() {
   return (
     <>
       <Canvas>
-        <Environment background files={"../limehouse_4k.hdr"} />
+        <Environment
+          background
+          resolution={4096}
+          files={"../dock_2.hdr"}
+        >
+          <Lightformer
+            form="rect" // circle | ring | rect (optional, default = rect)
+            intensity={1} // power level (optional = 1)
+            color="white" // (optional = white)
+            scale={[10, 5]} // Scale it any way you prefer (optional = [1, 1])
+            target={[0, 0, 0]} // Target position (optional = undefined)
+          ></Lightformer>
+        </Environment>
         <directionalLight castShadow position={[1, 2, 3]} intensity={1} />
         <Physics>
           <PerspectiveCamera
@@ -188,7 +201,13 @@ export default function Model3D() {
           />
 
           <RigidBody ref={apartmentRef} colliders="trimesh" type="fixed">
-            <primitive ref={apartment} position={[0,0,0]} object={model2Load.scene} scale={1} />
+            <primitive
+              ref={apartment}
+              position={[0, 0, 0]}
+              object={model2Load.scene}
+              scale={1}
+              rotation={[0,1.5,0]}
+            />
           </RigidBody>
         </Physics>
         <Control apartmentRef={apartmentRef} apartment={apartment} />
