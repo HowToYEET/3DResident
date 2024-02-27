@@ -65,7 +65,7 @@ const ListOfApartments = [
       "https://images.boligsiden.dk/images/case/fb661ea1-7ca9-45fe-b5f6-6ca9821351a7/1440x960/c423d0ad-7c86-4e2a-a7eb-f76279908f66.webp",
       "https://images.boligsiden.dk/images/case/fb661ea1-7ca9-45fe-b5f6-6ca9821351a7/1440x960/1c9619d8-0d1b-479e-aef7-9bc9be78f033.webp"
     ],
-    2295000, 1927, 4, 4, 17386, Energy.D, [-4, 1, 8],[],"/Apartment_3.glb"
+    2295000, 1927, 4, 4, 17386, Energy.D, [-4, 1, 8],[],"/Apartment_3.glb" // postion [0,18,0] og scale = 5
   ),
   new Apartment(9400, "Nørresundby", "Stigborgs brygge 149 3. tv", 115,
     [
@@ -75,7 +75,7 @@ const ListOfApartments = [
       "https://images.boligsiden.dk/images/case/dbe50ca3-6578-40e7-a1bd-0047cbb9e409/1440x960/0b044626-6904-49ad-a645-1f367b12ae43.webp"
 
     ],
-    4295000, 2022, 4, 3, 37348, Energy.A15, [-4, 1, 8],[],"/Apartment_1.glb"
+    4295000, 2022, 4, 3, 37348, Energy.A15, [-4, 1, 8],[],"/Apartment_4.glb"
   ),
   new Apartment(9000, "Aalborg", "Hadsundvej 86A, st. tv.", 88,
     [
