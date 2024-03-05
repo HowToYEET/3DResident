@@ -8,17 +8,19 @@ import {
   PerspectiveCamera,
   useFBX,
   useGLTF,
+  useHelper,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Canvas, events, useFrame, useThree } from "@react-three/fiber";
 import { useLocation } from "react-router-dom";
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-import { Physics, RigidBody } from "@react-three/rapier";
+import { CuboidCollider, Physics, RigidBody } from "@react-three/rapier";
+import { element } from "three/examples/jsm/nodes/shadernode/ShaderNode";
 
 const _euler = new THREE.Euler(0, 0, 0, "YXZ");
 
-const Control = (ARef) => {
+const Control = (apartment) => {
   let moveForward = false;
   let moveBackward = false;
   let moveLeft = false;
@@ -26,9 +28,11 @@ const Control = (ARef) => {
   let moveUp = false;
   let moveDown = false;
   const { camera } = useThree();
-  console.log(ARef.apartment.current);
+  const pointer = new THREE.Vector2();
+  const rayCaster = new THREE.Raycaster();
+
   console.log(camera);
-  console.log(ARef);
+  console.log(apartment);
   const handleMouseMove = (e) => {
     const movementX = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
     const movementY = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
@@ -115,48 +119,116 @@ const Control = (ARef) => {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   });
-
+  var position = {
+    x: camera.position.x,
+    y: camera.position.y,
+    z: camera.position.z,
+  };
   function update(delta) {
-    const actualMoveSpeed = delta * 2.0;
+    pointer.x = camera.position.x;
+    pointer.y = camera.position.z;
+    rayCaster.setFromCamera(pointer, camera);
+    const intersects = rayCaster.intersectObjects(
+      apartment.apartment.current.children,
+      true
+    );
+    const actualMoveSpeed = delta * 1.2;
     camera.position.y = 1.6;
-    //frameLimits(camera.position)
+    frameLimits(camera.position);
     if (moveForward == true) {
-      console.log(camera.position);
+      console.log(position);
+      intersects.forEach((element) => {
+        if (element.distance < 0.7) {
+          camera.position.set(position.x, position.y, position.z);
+          console.log(element);
+        }
+      });
+      position = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      };
       camera.translateZ(-actualMoveSpeed);
       camera.position.y = 1.6;
     }
+
     if (moveBackward == true) {
+      intersects.forEach((element) => {
+        if (element.distance < 0.7) {
+          camera.position.set(position.x, position.y, position.z);
+        }
+      });
+      position = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      };
       camera.translateZ(actualMoveSpeed);
       camera.position.y = 1.6;
     }
 
     if (moveLeft == true) {
+      intersects.forEach((element) => {
+        if (element.distance < 1.2) {
+          camera.position.set(position.x, position.y, position.z);
+        }
+      });
+      position = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      };
       camera.translateX(-actualMoveSpeed);
       camera.position.y = 1.6;
     }
+
     if (moveRight == true) {
+      intersects.forEach((element) => {
+        if (element.distance < 1.2) {
+          camera.position.set(position.x, position.y, position.z);
+        }
+      });
+      position = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      };
       camera.translateX(actualMoveSpeed);
       camera.position.y = 1.6;
     }
     if (moveDown == true) {
       camera.position.y = 1;
+      intersects.forEach((element) => {
+        if (element.distance < 1) {
+          camera.position.y = prevY;
+        }
+      });
     }
     if (moveUp == true) {
       camera.position.y = 2;
+
+      intersects.forEach((element) => {
+        if (element.distance < 1) {
+          camera.position.y = prevY;
+        }
+      });
     }
   }
   function frameLimits(position) {
-    if (position.z >= 4.99) {
-      position.z = 4.99;
+    if (position.z >= 5.99) {
+      position.z = 5.99;
     }
+
     if (position.z <= -6.5) {
       position.z = -6.5;
     }
+
     if (position.x <= -7) {
       position.x = -7;
     }
-    if (position.x >= 1.1) {
-      position.x = 1.1;
+
+    if (position.x >= 1.9) {
+      position.x = 1.9;
     }
   }
   useFrame((_, delta) => {
@@ -164,23 +236,21 @@ const Control = (ARef) => {
     TWEEN.update();
   });
 };
-
+const CameraHelperFunc = () => {};
 export default function Model3D() {
   const apartmentInfo = useLocation();
   const cameraRef = useRef();
   const model2Load = useGLTF(apartmentInfo.state.Apartment, true, true);
   const apartment = useRef();
   const apartmentRef = useRef();
+  const boxRef = useRef();
   console.log(model2Load);
   console.log(apartmentInfo);
+
   return (
     <>
       <Canvas>
-        <Environment
-          background
-          resolution={4096}
-          files={"../dock_2.hdr"}
-        >
+        <Environment background resolution={4096} files={"../dock_2.hdr"}>
           <Lightformer
             form="rect" // circle | ring | rect (optional, default = rect)
             intensity={1} // power level (optional = 1)
@@ -189,28 +259,25 @@ export default function Model3D() {
             target={[0, 0, 0]} // Target position (optional = undefined)
           ></Lightformer>
         </Environment>
-        <directionalLight castShadow position={[1, 2, 3]} intensity={1} />
-        <Physics>
-          <PerspectiveCamera
-            name="camera"
-            ref={cameraRef}
-            fov={80}
-            position={[-2.9, 1.6, 5.94]}
-            rotation={[0, 0, 0]}
-            makeDefault
-          />
 
-          <RigidBody ref={apartmentRef} colliders="trimesh" type="fixed">
-            <primitive
-              ref={apartment}
-              position={[0, 0, 0]}
-              object={model2Load.scene}
-              scale={1}
-              rotation={[0,1.5,0]}
-            />
-          </RigidBody>
-        </Physics>
-        <Control apartmentRef={apartmentRef} apartment={apartment} />
+        <directionalLight castShadow position={[1, 2, 3]} intensity={1} />
+        <PerspectiveCamera
+          name="camera"
+          ref={cameraRef}
+          fov={80}
+          position={[-2.9, 1.6, 5.94]}
+          rotation={[0, 0, 0]}
+          makeDefault
+        />
+        <primitive
+          ref={apartment}
+          position={[0, 0, 0]}
+          object={model2Load.scene}
+          scale={1}
+          rotation={[0, 0, 0]}
+        />
+
+        <Control apartment={apartment} />
       </Canvas>
       <div className="absolute top-60 left-10 w-20 m-4 hover:opacity-100 opacity-75">
         <button
