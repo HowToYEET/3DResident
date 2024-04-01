@@ -10,16 +10,13 @@ import {
   useGLTF,
   useHelper,
 } from "@react-three/drei";
-import { Perf } from "r3f-perf";
 import { Canvas, events, useFrame, useThree } from "@react-three/fiber";
 import { useLocation } from "react-router-dom";
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-import { CuboidCollider, Physics, RigidBody } from "@react-three/rapier";
-import { element } from "three/examples/jsm/nodes/shadernode/ShaderNode";
 
 const _euler = new THREE.Euler(0, 0, 0, "YXZ");
-
+const MINIMUM_DIST = 0.7;
 const Control = (apartment) => {
   let moveForward = false;
   let moveBackward = false;
@@ -30,7 +27,7 @@ const Control = (apartment) => {
   const { camera } = useThree();
   const pointer = new THREE.Vector2();
   const rayCaster = new THREE.Raycaster();
-
+  const apartmentInfo = useLocation();
   console.log(camera);
   console.log(apartment);
   const handleMouseMove = (e) => {
@@ -137,8 +134,9 @@ const Control = (apartment) => {
     frameLimits(camera.position);
     if (moveForward == true) {
       console.log(position);
+      console.log(camera);
       intersects.forEach((element) => {
-        if (element.distance < 0.7) {
+        if (element.distance < MINIMUM_DIST) {
           camera.position.set(position.x, position.y, position.z);
           console.log(element);
         }
@@ -154,7 +152,7 @@ const Control = (apartment) => {
 
     if (moveBackward == true) {
       intersects.forEach((element) => {
-        if (element.distance < 0.7) {
+        if (element.distance < MINIMUM_DIST) {
           camera.position.set(position.x, position.y, position.z);
         }
       });
@@ -169,7 +167,7 @@ const Control = (apartment) => {
 
     if (moveLeft == true) {
       intersects.forEach((element) => {
-        if (element.distance < 1.2) {
+        if (element.distance < MINIMUM_DIST) {
           camera.position.set(position.x, position.y, position.z);
         }
       });
@@ -184,7 +182,7 @@ const Control = (apartment) => {
 
     if (moveRight == true) {
       intersects.forEach((element) => {
-        if (element.distance < 1.2) {
+        if (element.distance < MINIMUM_DIST) {
           camera.position.set(position.x, position.y, position.z);
         }
       });
@@ -196,39 +194,22 @@ const Control = (apartment) => {
       camera.translateX(actualMoveSpeed);
       camera.position.y = 1.6;
     }
-    if (moveDown == true) {
-      camera.position.y = 1;
-      intersects.forEach((element) => {
-        if (element.distance < 1) {
-          camera.position.y = prevY;
-        }
-      });
-    }
-    if (moveUp == true) {
-      camera.position.y = 2;
-
-      intersects.forEach((element) => {
-        if (element.distance < 1) {
-          camera.position.y = prevY;
-        }
-      });
-    }
   }
   function frameLimits(position) {
-    if (position.z >= 5.99) {
-      position.z = 5.99;
+    if (position.z >= apartmentInfo.state.framelimits.z1) {
+      position.z = apartmentInfo.state.framelimits.z1;
     }
 
-    if (position.z <= -6.5) {
-      position.z = -6.5;
+    if (position.z <= apartmentInfo.state.framelimits.z2) {
+      position.z = apartmentInfo.state.framelimits.z2;
     }
 
-    if (position.x <= -7) {
-      position.x = -7;
+    if (position.x <= apartmentInfo.state.framelimits.x1) {
+      position.x = apartmentInfo.state.framelimits.x1;
     }
 
-    if (position.x >= 1.9) {
-      position.x = 1.9;
+    if (position.x >= apartmentInfo.state.framelimits.x2) {
+      position.x = apartmentInfo.state.framelimits.x2;
     }
   }
   useFrame((_, delta) => {
@@ -236,20 +217,49 @@ const Control = (apartment) => {
     TWEEN.update();
   });
 };
-const CameraHelperFunc = () => {};
+
 export default function Model3D() {
+  const MAX_RETRIES = 3; // Maximum number of retries
+  const RETRY_DELAY = 2000; // Delay in milliseconds between retries
+  const [retryCount, setRetryCount] = useState(0);
   const apartmentInfo = useLocation();
-  const cameraRef = useRef();
-  const model2Load = useGLTF(apartmentInfo.state.Apartment, true, true);
+  const cameraRef = useRef(null);
+  const model2Load = useGLTF(apartmentInfo.state.ApartmentPath, true, true);
   const apartment = useRef();
-  const apartmentRef = useRef();
-  const boxRef = useRef();
+  const btnInfo = apartmentInfo.state.Annotation;
   console.log(model2Load);
   console.log(apartmentInfo);
-
+  const buttons = btnInfo.map(({ title, position, lookAt }) => (
+    <button
+      className="bg-emerald-400 w-40 text-center whitespace-nowrap rounded-md my-2 hover:bg-emerald-600"
+      type="button"
+      onClick={() => {
+        if (cameraRef) {
+          const TweenP = new TWEEN.Tween(cameraRef.current.position)
+            .to({ x: position.x, y: position.y, z: position.z }, 600)
+            .easing(TWEEN.Easing.Cubic.Out)
+            .start();
+          TweenP.onComplete(() => {
+            const Start = cameraRef.current.quaternion.clone();
+            cameraRef.current.lookAt(
+              new THREE.Vector3(lookAt.x, lookAt.y, lookAt.z)
+            );
+            const End = cameraRef.current.quaternion.clone();
+            cameraRef.current.quaternion.copy(Start);
+            new TWEEN.Tween(cameraRef.current.quaternion)
+              .to(End, 400)
+              .easing(TWEEN.Easing.Cubic.Out)
+              .start();
+          });
+        }
+      }}
+    >
+      {title}
+    </button>
+  ));
   return (
     <>
-      <Canvas>
+      <Canvas id="canvas">
         <Environment background resolution={4096} files={"../dock_2.hdr"}>
           <Lightformer
             form="rect" // circle | ring | rect (optional, default = rect)
@@ -265,8 +275,8 @@ export default function Model3D() {
           name="camera"
           ref={cameraRef}
           fov={80}
-          position={[-2.9, 1.6, 5.94]}
-          rotation={[0, 0, 0]}
+          position={apartmentInfo.state.startingCameraPosition}
+          rotation={apartmentInfo.state.target}
           makeDefault
         />
         <primitive
@@ -279,27 +289,8 @@ export default function Model3D() {
 
         <Control apartment={apartment} />
       </Canvas>
-      <div className="absolute top-60 left-10 w-20 m-4 hover:opacity-100 opacity-75">
-        <button
-          className="bg-emerald-400 w-40 text-center whitespace-nowrap rounded-md"
-          type="button"
-          onClick={() => {
-            const TweenP = new TWEEN.Tween(cameraRef.current.position)
-              .to({ x: -3.4, y: 1.6, z: 4.54 }, 400)
-              .start();
-            TweenP.onComplete(() => {
-              const Start = cameraRef.current.quaternion.clone();
-              cameraRef.current.lookAt(new THREE.Vector3(-0.1, 1.6, 2.5));
-              const End = cameraRef.current.quaternion.clone();
-              cameraRef.current.quaternion.copy(Start);
-              new TWEEN.Tween(cameraRef.current.quaternion)
-                .to(End, 400)
-                .start();
-            });
-          }}
-        >
-          CLICK ME
-        </button>
+      <div className="absolute top-60 left-10 w-20 m-4 opacity-75">
+        {buttons}
       </div>
     </>
   );
